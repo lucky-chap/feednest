@@ -15,7 +15,7 @@ export default function ProjectCard() {
       </div>
 
       <div className="flex flex-row items-center justify-between bg-zinc-50 p-4 text-center">
-        <Link href="/app/console/propensity-32" className="mr-2 w-full">
+        <Link href="/console/propensity-32" className="mr-2 w-full">
           <Button
             variant={"outline"}
             className="w-full rounded-full text-zinc-500 hover:text-zinc-600"
