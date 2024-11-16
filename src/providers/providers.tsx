@@ -12,7 +12,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         disableTransitionOnChange
       >
         {children}
-        <OneTapComponent googleClientID={process.env.AUTH_GOOGLE_ID!} />
+        {/* <OneTapComponent googleClientID={process.env.AUTH_GOOGLE_ID!} /> */}
       </ThemeProvider>
     </NextAuthProvider>
   );
