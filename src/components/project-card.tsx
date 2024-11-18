@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { Calendar, Trash } from "lucide-react";
 import Link from "next/link";
 
-export default function ProjectCard() {
+export default function ProjectCard({ project }: { project: any }) {
   return (
     <div className="z-10 w-full max-w-md overflow-hidden rounded-2xl border border-zinc-200 shadow-none">
       <div className="flex flex-col space-y-4 bg-white px-4 py-8">

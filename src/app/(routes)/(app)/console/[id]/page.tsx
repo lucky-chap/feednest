@@ -1,3 +1,4 @@
+import Feedback from "@/components/feedback";
 import { Button } from "@/components/ui/button";
 import { Settings, Star, StarIcon, Trash } from "lucide-react";
 import React from "react";
@@ -21,9 +22,8 @@ export default function ProjectPage() {
           </Button>
         </div>
       </div>
-      {/* main section */}
-      <section className="mx-auto my-10 max-w-4xl">
-        {/* summary section */}
+      <section className="mx-auto my-12 max-w-3xl">
+        {/* ai summary section */}
         <div className="rounded-xl border border-zinc-200 bg-white p-10 text-center text-zinc-500 shadow shadow-zinc-100">
           <h2 className="font-medium text-zinc-600">AI Summary</h2>
           <p className="my-2 text-xs">Based on 10 customer ratings</p>
@@ -40,7 +40,7 @@ export default function ProjectPage() {
             </p>
           </div>
           {/* ai summary */}
-          <p className="mt-2 leading-7">
+          <p className="mt-4 leading-7">
             Customers find the Mower3000 reliable for flat lawns, praising its
             quiet operation and autonomous features. However, some encounter
             issues on slopes and uneven cuts, as well as complications during
@@ -49,6 +49,12 @@ export default function ProjectPage() {
           </p>
         </div>
       </section>
+
+      {/* all feedback */}
+
+      <div className="mx-auto mb-10 mt-20 max-w-3xl">
+        <Feedback />
+      </div>
     </div>
   );
 }

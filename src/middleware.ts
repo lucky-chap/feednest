@@ -1,40 +1,24 @@
-import NextAuth from "next-auth";
-import authConfig from "@/lib/auth/auth.config";
 import {
-  DEFAULT_LOGIN_REDIRECT,
-  apiAuthPrefix,
-  authRoutes,
-  publicRoutes,
-} from "@/routes";
+  convexAuthNextjsMiddleware,
+  createRouteMatcher,
+  isAuthenticatedNextjs,
+  nextjsMiddlewareRedirect,
+} from "@convex-dev/auth/nextjs/server";
 
-const { auth } = NextAuth(authConfig);
+const isSignInPage = createRouteMatcher(["/signin"]);
+const isProtectedRoute = createRouteMatcher(["/projects(.*)", "/new(.*)"]);
 
-export default auth((req) => {
-  const { nextUrl } = req;
-  const isLoggedIn = !!req.auth;
-
-  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-
-  if (isApiAuthRoute) {
-    return;
+export default convexAuthNextjsMiddleware((request) => {
+  if (isSignInPage(request) && isAuthenticatedNextjs()) {
+    return nextjsMiddlewareRedirect(request, "/projects");
   }
-
-  if (isAuthRoute) {
-    if (isLoggedIn) {
-      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
-    }
-    return;
+  if (isProtectedRoute(request) && !isAuthenticatedNextjs()) {
+    return nextjsMiddlewareRedirect(request, "/signin");
   }
-
-  if (!isLoggedIn && !isPublicRoute) {
-    return Response.redirect(new URL("/signin", nextUrl));
-  }
-
-  return;
 });
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  // The following matcher runs middleware on all routes
+  // except static assets.
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
 };

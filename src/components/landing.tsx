@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { Authenticated, Unauthenticated } from "convex/react";
 
 import { MenuIcon } from "lucide-react";
 import { Button } from "./ui/button";
 
-import { signIn } from "next-auth/react";
 import Link from "next/link";
 
 // const navigation = [
@@ -16,6 +17,7 @@ import Link from "next/link";
 // ];
 
 export default function Landing() {
+  const { signIn } = useAuthActions();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -89,24 +91,30 @@ export default function Landing() {
                   it all in one place, with one tool. Get started for free.
                 </p>
                 <div className="mt-10 flex items-center justify-center gap-x-6">
-                  <Button
-                    onClick={() =>
-                      signIn("google", {
-                        redirect: true,
-                        redirectTo: "/console",
-                      })
-                    }
-                    variant={"default"}
-                    className="rounded-full bg-indigo-600 px-3.5 py-2.5 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  >
-                    Login with Google
-                  </Button>
-                  <a
-                    href="#"
-                    className="text-sm font-semibold leading-6 text-gray-900"
-                  >
-                    Learn more <span aria-hidden="true">→</span>
-                  </a>
+                  <Authenticated>
+                    <Link href={"/console"}>
+                      <Button
+                        variant={"default"}
+                        className="rounded-full bg-indigo-600 px-3.5 py-2.5 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      >
+                        View console
+                      </Button>
+                    </Link>
+                  </Authenticated>
+
+                  <Unauthenticated>
+                    <Button
+                      onClick={() =>
+                        void signIn("github", {
+                          redirectTo: "/console",
+                        })
+                      }
+                      variant={"default"}
+                      className="rounded-full bg-zinc-900 px-3.5 py-2.5 text-sm text-white shadow-sm hover:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    >
+                      Login with Github
+                    </Button>
+                  </Unauthenticated>
                 </div>
               </div>
               <div className="mt-16 flow-root sm:mt-24">
