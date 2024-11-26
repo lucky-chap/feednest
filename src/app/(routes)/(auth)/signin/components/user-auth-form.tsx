@@ -27,7 +27,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     <div className={cn("grid gap-6", className)} {...props}>
       <Button
         onClick={() =>
-          signIn("google", {
+          signIn("github", {
             redirect: true,
             redirectTo: "/console",
           })

@@ -4,11 +4,12 @@ import { v } from "convex/values";
 
 const schema = defineSchema({
   ...authTables,
-  project: defineTable({
+  projects: defineTable({
     userId: v.id("users"),
     userEmail: v.string(),
     name: v.string(),
     website: v.string(),
+    summary: v.string(),
   })
     // https://docs.convex.dev/database/indexes/indexes-and-query-perf
     .index("creator", ["userEmail"])
@@ -17,7 +18,7 @@ const schema = defineSchema({
       searchField: "name",
     }),
   feedback: defineTable({
-    projectId: v.id("project"),
+    projectId: v.id("projects"),
     by: v.string(),
     content: v.string(),
     type: v.string(),
@@ -25,6 +26,7 @@ const schema = defineSchema({
     country_code: v.string(),
     route: v.string(),
     status: v.string(), // resolved or pending
+    sentiment: v.string(),
   })
     .index("projectId", ["projectId"])
     .index("status", ["status"]),

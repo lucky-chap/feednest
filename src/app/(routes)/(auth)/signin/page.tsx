@@ -32,7 +32,7 @@ export default function AuthenticationPage() {
                 Log in to your account
               </h1>
               <p className="text-sm text-muted-foreground">
-                Use your Google account to sign in.
+                Use your Github account to sign in.
               </p>
             </div>
             <UserAuthForm />

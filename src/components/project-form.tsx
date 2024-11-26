@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
+import { Loader, Loader2 } from "lucide-react";
 
 const FormSchema = z.object({
   name: z.string().min(4, {
@@ -29,6 +31,7 @@ const FormSchema = z.object({
 export type FormSchema = z.infer<typeof FormSchema>;
 
 export default function ProjectForm() {
+  const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -37,7 +40,15 @@ export default function ProjectForm() {
     },
   });
 
-  const onSubmit = async (data: FormSchema) => {};
+  const onSubmit = async (data: FormSchema) => {
+    setLoading(true);
+    try {
+      // Your API call here
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Form {...form}>
@@ -80,10 +91,12 @@ export default function ProjectForm() {
         />
         <div className="h-14"></div>
         <Button
+          disabled={loading}
           type="submit"
           className="rounded-full bg-indigo-600 px-3.5 py-2.5 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
-          Create project
+          {loading && <Loader2 className="animate-spin" size={16} />}
+          {loading ? "Creating..." : "Create project"}
         </Button>
       </form>
     </Form>
