@@ -7,12 +7,13 @@ import { Github, Loader, Loader2 } from "lucide-react";
 import { Label } from "../../../../../components/ui/label";
 import { Button } from "../../../../../components/ui/button";
 import { Input } from "../../../../../components/ui/input";
-import { signIn } from "next-auth/react";
 
+import { useAuthActions } from "@convex-dev/auth/react";
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const { signIn } = useAuthActions();
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
@@ -27,15 +28,14 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     <div className={cn("grid gap-6", className)} {...props}>
       <Button
         onClick={() =>
-          signIn("github", {
-            redirect: true,
+          void signIn("github", {
             redirectTo: "/console",
           })
         }
         variant={"default"}
         className="rounded-full bg-indigo-600 px-3.5 py-2.5 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       >
-        Login with Google
+        Login with Github
       </Button>
     </div>
   );

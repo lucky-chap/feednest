@@ -18,6 +18,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { Loader, Loader2 } from "lucide-react";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 const FormSchema = z.object({
   name: z.string().min(4, {
@@ -31,6 +33,9 @@ const FormSchema = z.object({
 export type FormSchema = z.infer<typeof FormSchema>;
 
 export default function ProjectForm() {
+  const user = useQuery(api.user.viewer);
+
+  const createNewProject = useMutation(api.project.createProject);
   const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -40,15 +45,42 @@ export default function ProjectForm() {
     },
   });
 
-  const onSubmit = async (data: FormSchema) => {
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
     setLoading(true);
     try {
-      // Your API call here
+      const projectId = await createNewProject({
+        name: data.name,
+        userEmail: user?.email as string,
+        website: data.website,
+      });
+      if (projectId != null) {
+        setLoading(false);
+        toast({
+          variant: "default",
+          title: "New project created.",
+          description: "Find it in /console",
+        });
+        form.reset();
+      } else {
+        setLoading(false);
+        toast({
+          variant: "destructive",
+          title: "An error occurred",
+          description: "Your project was not created.",
+        });
+      }
     } catch (error) {
-    } finally {
       setLoading(false);
+      if (error instanceof Error) {
+        console.error(error);
+        toast({
+          variant: "destructive",
+          title: "An error occurred",
+          description: "Project creation failed.",
+        });
+      }
     }
-  };
+  }
 
   return (
     <Form {...form}>
@@ -65,9 +97,7 @@ export default function ProjectForm() {
               <FormControl>
                 <Input placeholder="Cool project name" {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
+
               <FormMessage />
             </FormItem>
           )}
@@ -82,9 +112,7 @@ export default function ProjectForm() {
               <FormControl>
                 <Input placeholder="https://coolproject.sh" {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
+
               <FormMessage />
             </FormItem>
           )}

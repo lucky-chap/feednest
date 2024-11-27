@@ -1,0 +1,9 @@
+export const RESOLVED = "resolved";
+export const PENDING = "pending";
+export const PRAISE = "praise";
+export const IDEA = "idea";
+export const ISSUE = "issue";
+export const OTHER = "other";
+export const POSITIVE = "positive";
+export const NEGATIVE = "negative";
+export const NEUTRAL = "neutral";
