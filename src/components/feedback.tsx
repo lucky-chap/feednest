@@ -43,7 +43,7 @@ export default function Feedback({ feedback }: { feedback: IFeedback }) {
     }
   };
   return (
-    <article>
+    <article className="pb-16">
       <section className="flex items-start justify-between">
         <div className="flex flex-col">
           <div className="flex items-center">
@@ -96,7 +96,7 @@ export default function Feedback({ feedback }: { feedback: IFeedback }) {
       </section>
       <section>
         <p className="my-2 text-sm leading-7 text-zinc-700">
-          {feedback.content}
+          {capitalizeFirstLetter(feedback.content)}
         </p>
         <div className="flex justify-between">
           <div className="flex items-center">

@@ -94,8 +94,8 @@ export const createFeedbackForProject = mutation({
       country_code,
       type,
       route,
-      status: status,
-      sentiment: sentiment,
+      status,
+      sentiment,
     });
 
     return feedbackId;

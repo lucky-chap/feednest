@@ -42,21 +42,23 @@ export default function Page() {
     { initialNumItems: 10 },
   );
 
-  const projects: any[] = [];
-  console.log("ALl projects", projects);
   return (
-    <div className="px-20 py-3">
+    <div className="py-3 md:px-20">
       <div className="flex items-center">
         <h2 className="mr-2 text-lg font-medium">Your projects</h2>
         <span className="me-2 rounded-full bg-blue-200 px-2.5 py-0.5 text-xs font-medium text-gray-800">
-          {projects.length} in total
+          {results.length} in total
         </span>
       </div>
       <div className="py-10">
         {/* <ProjectCard /> */}
-        {results.map((project) => (
-          <ProjectCard key={project._id} project={project} />
-        ))}
+        <div className="grid gap-2 md:grid-cols-3">
+          {results.map((project) => (
+            <div className="">
+              <ProjectCard key={project._id} project={project} />
+            </div>
+          ))}
+        </div>
 
         {status === "Exhausted" && results.length === 0 && (
           <div className="grid h-[70vh] place-content-center">

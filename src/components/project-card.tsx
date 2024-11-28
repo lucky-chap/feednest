@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { Calendar, Trash } from "lucide-react";
 import Link from "next/link";
 import { IProject } from "@/lib/types";
+import Timeago from "react-timeago";
 
 export default function ProjectCard({ project }: { project: IProject }) {
   return (
@@ -13,7 +14,7 @@ export default function ProjectCard({ project }: { project: IProject }) {
         <h5 className="text-lg font-medium">{project.name}</h5>
         <p className="flex items-center text-sm text-zinc-400">
           <Calendar size={15} className="mr-1 text-zinc-400" />
-          {new Date(project._creationTime).toLocaleDateString()}
+          <Timeago date={project._creationTime} />
         </p>
       </div>
 
