@@ -114,7 +114,8 @@ export const updateFeedbackStatus = mutation({
     await ctx.db.patch(feedbackId, {
       status: feedbackStatus,
     });
-    return "feedback_status_updated";
+    const feedback = await ctx.db.get(feedbackId);
+    return feedback;
   },
 });
 

@@ -1,16 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import {
-  useAction,
-  useMutation,
-  usePaginatedQuery,
-  useQuery,
-} from "convex/react";
+import { usePaginatedQuery, useQuery } from "convex/react";
 import { gql, useLazyQuery } from "@apollo/client";
 import Feedback from "@/components/feedback";
 import { Button } from "@/components/ui/button";
-import { Loader2, Settings, Star, StarIcon, Trash } from "lucide-react";
+import { Loader2, Settings, Trash } from "lucide-react";
 import React from "react";
 import { api } from "../../../../../../convex/_generated/api";
 import CodeDialog from "@/components/code-dialog";
@@ -100,15 +95,6 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
 
   const handleFeedbackSearch = async () => {
     setStartSearch(true);
-    // if (searchTerm.trim().length === 0) {
-    //   toast({
-    //     variant: "destructive",
-    //     title: "Error",
-    //     description: "Search field cannot be empty",
-    //   });
-    //   return;
-    // } else {
-    // }
     await search();
   };
 
@@ -197,14 +183,18 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
           <div className="">
             <h4 className="mb-6 text-xl font-medium">Search results</h4>
             {parsedFeedback.map((feedback) => (
-              <Feedback key={feedback._id} feedback={feedback} />
+              <Feedback
+                key={feedback._id}
+                feedback={feedback}
+                isSearch={true}
+              />
             ))}
           </div>
         )}
 
         {parsedFeedback.length == 0 &&
           results.map((feedback) => (
-            <Feedback key={feedback._id} feedback={feedback} />
+            <Feedback key={feedback._id} feedback={feedback} isSearch={false} />
           ))}
         {status === "Exhausted" && results.length === 0 && (
           <div className="grid place-content-center">

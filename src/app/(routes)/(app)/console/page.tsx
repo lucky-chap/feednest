@@ -54,8 +54,8 @@ export default function Page() {
         {/* <ProjectCard /> */}
         <div className="grid gap-2 md:grid-cols-3">
           {results.map((project) => (
-            <div className="">
-              <ProjectCard key={project._id} project={project} />
+            <div key={project._id} className="">
+              <ProjectCard project={project} />
             </div>
           ))}
         </div>
