@@ -81,12 +81,16 @@ export const updateProject = mutation({
     projectId: v.id("projects"),
     name: v.string(),
     website: v.string(),
+    summary: v.string(),
+    suggestions: v.string(),
   },
-  handler: async (ctx, { projectId, name, website }) => {
+  handler: async (ctx, { projectId, name, website, summary, suggestions }) => {
     await checkUserId(ctx);
     await ctx.db.patch(projectId, {
       name,
       website,
+      summary,
+      suggestions,
     });
     return "updated";
   },

@@ -8,6 +8,7 @@ export type IProject = {
   name: string;
   website: string;
   summary: string;
+  suggestions?: string | undefined;
 };
 
 export type IFeedback = {

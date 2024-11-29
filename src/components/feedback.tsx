@@ -71,7 +71,6 @@ export default function Feedback({
     }
   };
 
-  console.log("CUrrent status", currentStatus);
   return (
     <article className="pb-16">
       <section className="flex items-start justify-between">

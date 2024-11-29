@@ -36,16 +36,6 @@ const data = {
       url: "/new",
       icon: Plus,
     },
-    {
-      title: "Search for feedback",
-      url: "/search-feedback",
-      icon: Search,
-    },
-    {
-      title: "Analytics",
-      url: "/analytics/project-id",
-      icon: ChartColumn,
-    },
   ],
 };
 

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { usePaginatedQuery, useQuery } from "convex/react";
+import { useRouter } from "next/navigation";
+import { usePaginatedQuery, useQuery, useMutation } from "convex/react";
 import { gql, useLazyQuery } from "@apollo/client";
 import Feedback from "@/components/feedback";
 import { Button } from "@/components/ui/button";
@@ -13,15 +14,20 @@ import { Id } from "../../../../../../convex/_generated/dataModel";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { IFeedback } from "@/lib/types";
+import ProjectSettings from "@/components/project-settings";
 
 export default function ProjectPage({ params }: { params: { id: string } }) {
+  const router = useRouter();
   const { toast } = useToast();
+  const [deleting, setDeleting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [startSearch, setStartSearch] = useState(false);
   const [parsedFeedback, setParsedFeedback] = useState<IFeedback[]>([]);
   const project = useQuery(api.project.fetchSingleProject, {
     id: params.id as any,
   });
+  const updateProject = useMutation(api.project.updateProject);
+  const deletePorject = useMutation(api.project.deleteProject);
 
   const { results, status, loadMore, isLoading } = usePaginatedQuery(
     api.feedback.fetchFeedbackForProject,
@@ -30,6 +36,8 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     },
     { initialNumItems: 15 },
   );
+  const [summary, setSummary] = useState(project?.summary);
+  const [suggestions, setSuggestions] = useState(project?.suggestions);
 
   const SearchFeedbackQuery = gql`
     query Search(
@@ -56,6 +64,15 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
           distance
           score
         }
+      }
+    }
+  `;
+
+  const SummariseFeedbackQuery = gql`
+    query SummariseFeedback($feedback: [String!]!) {
+      summariseFeedback(feedback: $feedback) {
+        summary
+        suggestions
       }
     }
   `;
@@ -93,58 +110,162 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     },
   });
 
+  const [summariseFeedback, { loading: summaryLoading }] = useLazyQuery(
+    SummariseFeedbackQuery,
+    {
+      skipPollAttempt: () => !startSearch,
+      variables: {
+        feedback: results.map((feedback) => feedback.content), // return only the content of the feedback,
+      },
+      onCompleted: async (data) => {
+        setSummary(data.summariseFeedback.summary);
+        setSuggestions(data.summariseFeedback.suggestions);
+        // update project summary and suggestions in convex
+
+        const status = await updateProject({
+          projectId: params.id as Id<"projects">,
+          name: project?.name as string,
+          website: project?.website as string,
+          summary: data.summariseFeedback.summary,
+          suggestions: data.summariseFeedback.suggestions,
+        });
+
+        if (status === "updated") {
+          return;
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description:
+              "An error occurred while storing summary and suggestions.",
+          });
+        }
+
+        console.log("Summarised feedback", summary);
+        console.log("Suggestions", suggestions);
+      },
+    },
+  );
+
   const handleFeedbackSearch = async () => {
     setStartSearch(true);
     await search();
   };
 
+  const handleSummariseFeedback = async () => {
+    await summariseFeedback();
+  };
+
+  const handleDeletProject = async () => {
+    setDeleting(true);
+    const status = await deletePorject({
+      projectId: params.id as Id<"projects">,
+    });
+
+    if (status === "deleted") {
+      setDeleting(false);
+      router.push("/console");
+      toast({
+        variant: "default",
+        title: "Project deleted.",
+        description: "Your project has been deleted successfully.",
+      });
+    } else {
+      setDeleting(false);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "An error occurred while deleting the project.",
+      });
+    }
+  };
+
+  // console.log("Summary", project?.summary);
+
   return (
     <div className="mx-auto max-w-5xl px-5 py-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <h2 className="mr-2 font-medium">Feedback for {project?.name}</h2>
+          <h2 className="mr-2 font-medium">
+            <span className="text-zinc-500">Feedback for</span> {project?.name}
+          </h2>
           <span className="me-2 rounded-full bg-blue-200 px-2.5 py-0.5 text-xs font-medium text-gray-800">
             {results.length} in total
           </span>
         </div>
         <div className="flex items-center">
           <CodeDialog projectId={params.id as Id<"projects">} />
-          <Button variant={"outline"} className="mx-2 h-auto rounded-full p-2">
-            <Settings size={15} className="text-zinc-400" />
-          </Button>
-          <Button variant={"outline"} className="h-auto rounded-full p-2">
+          <ProjectSettings project={project} />
+          <Button
+            disabled={deleting}
+            onClick={() => handleDeletProject()}
+            variant={"outline"}
+            className="h-auto rounded-full p-2"
+          >
             <Trash size={15} className="text-zinc-400" />
           </Button>
         </div>
       </div>
       <section className="mx-auto my-12 max-w-3xl">
-        {/* ai summary section */}
+        {/* ai summary and suggestions section */}
         <div className="rounded-xl border border-zinc-200 bg-white p-10 text-center text-zinc-500 shadow shadow-zinc-100">
-          <h2 className="font-medium text-zinc-600">AI Summary</h2>
-
           {/* ai summary */}
-          {project?.summary && project.summary.length < 1 ? (
-            <div className="">
-              <p className="mt-4 leading-7">
-                Customers find the Mower3000 reliable for flat lawns, praising
-                its quiet operation and autonomous features. However, some
-                encounter issues on slopes and uneven cuts, as well as
-                complications during setup and app usage. The overall rating
-                reflects a neutral sentiment with areas for improvement.
-              </p>
-              <Button className="rounded-full bg-indigo-600 px-3.5 py-2.5 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                Regenerate
-              </Button>
-            </div>
+          {project == undefined ? (
+            <Loader2 className="flex h-7 w-full animate-spin items-center justify-center text-zinc-500" />
           ) : (
-            <div className="">
-              <p className="mt-4 leading-7">
-                No AI summary available for this project yet.
-              </p>
-              <Button className="rounded-full bg-indigo-600 px-3.5 py-2.5 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                Generate
-              </Button>
-            </div>
+            <>
+              {project?.summary?.length! > 0 ? (
+                <div className="">
+                  <h2 className="font-medium text-zinc-600">AI Summary</h2>
+                  <p className="my-4 leading-7">{project?.summary}</p>
+                </div>
+              ) : (
+                <div className="">
+                  <h2 className="font-medium text-zinc-600">AI Summary</h2>
+                  <p className="my-4 leading-7">
+                    No AI summary available for this project yet.
+                  </p>
+                </div>
+              )}
+
+              {/* ai suggestions */}
+              {project?.suggestions?.length! > 0 ? (
+                <div className="">
+                  <h2 className="font-medium text-zinc-600">AI Suggestions</h2>
+
+                  <p className="my-4 leading-7">{project?.suggestions}</p>
+                  <Button
+                    disabled={summaryLoading}
+                    onClick={() => handleSummariseFeedback()}
+                    className="rounded-full bg-indigo-600 px-3.5 py-2.5 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  >
+                    {summaryLoading ? (
+                      <Loader2 className="h-7 w-7 animate-spin text-white" />
+                    ) : null}
+                    {summaryLoading ? "Regenerating" : "Regnerate"}
+                  </Button>
+                </div>
+              ) : (
+                <div className="">
+                  <h2 className="font-medium text-zinc-600">AI Suggestions</h2>
+
+                  <p className="my-4 leading-7">
+                    No AI suggestions available for this project yet.
+                  </p>
+                  <Button
+                    disabled={summaryLoading || results.length === 0}
+                    onClick={() => handleSummariseFeedback()}
+                    className="rounded-full bg-indigo-600 px-3.5 py-2.5 text-sm text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  >
+                    {summaryLoading ? (
+                      <Loader2 className="h-7 w-7 animate-spin text-white" />
+                    ) : null}
+
+                    {summaryLoading ? "Generating" : "Generate"}
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>
@@ -214,7 +335,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
           </div>
         )}
 
-        {status === "CanLoadMore" && (
+        {searchTerm.length == 0 && status === "CanLoadMore" && (
           <div className="mx-auto max-w-sm px-3 pl-32">
             <Button
               onClick={() => loadMore(10)}

@@ -10,6 +10,7 @@ const schema = defineSchema({
     name: v.string(),
     website: v.string(),
     summary: v.string(),
+    suggestions: v.optional(v.string()),
   })
     // https://docs.convex.dev/database/indexes/indexes-and-query-perf
     .index("creator", ["userEmail"])
