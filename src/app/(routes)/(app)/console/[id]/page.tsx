@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePaginatedQuery, useQuery, useMutation } from "convex/react";
 import { gql, useLazyQuery } from "@apollo/client";
 import Feedback from "@/components/feedback";
 import { Button } from "@/components/ui/button";
-import { Loader2, Settings, Trash } from "lucide-react";
+import { Loader2, Trash } from "lucide-react";
 import React from "react";
 import { api } from "../../../../../../convex/_generated/api";
 import CodeDialog from "@/components/code-dialog";
@@ -19,6 +19,7 @@ import ProjectSettings from "@/components/project-settings";
 export default function ProjectPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { toast } = useToast();
+  const [hypermodeKey, setHypermodeKey] = useState("");
   const [deleting, setDeleting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [startSearch, setStartSearch] = useState(false);
@@ -38,6 +39,15 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
   );
   const [summary, setSummary] = useState(project?.summary);
   const [suggestions, setSuggestions] = useState(project?.suggestions);
+
+  // get api key from api route
+  useEffect(() => {
+    fetch(`/api/env`)
+      .then((r) => r.json())
+      .then((res) => {
+        setHypermodeKey(res.key);
+      });
+  }, []);
 
   const SearchFeedbackQuery = gql`
     query Search(
@@ -81,7 +91,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     context: {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_HYPERMODE_API_KEY}`,
+        Authorization: `Bearer ${hypermodeKey}`,
       },
     },
     skipPollAttempt: () => !startSearch,
@@ -122,7 +132,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
       context: {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_HYPERMODE_API_KEY}`,
+          Authorization: `Bearer ${hypermodeKey}`,
         },
       },
       skipPollAttempt: () => !startSearch,
