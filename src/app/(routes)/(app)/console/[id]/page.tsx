@@ -17,10 +17,13 @@ import CodeDialog from "@/components/code-dialog";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { IFeedback } from "@/lib/types";
 
 export default function ProjectPage({ params }: { params: { id: string } }) {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
+  const [startSearch, setStartSearch] = useState(false);
+  const [parsedFeedback, setParsedFeedback] = useState<IFeedback[]>([]);
   const project = useQuery(api.project.fetchSingleProject, {
     id: params.id as any,
   });
@@ -63,7 +66,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
   `;
 
   const [search, { loading, error, data }] = useLazyQuery(SearchFeedbackQuery, {
-    skipPollAttempt: () => false,
+    skipPollAttempt: () => !startSearch,
     variables: {
       text: searchTerm,
       collection: "feedback",
@@ -71,19 +74,32 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
       projectId: params.id,
     },
     onCompleted: (data) => {
-      // console.log("Search results", data);
+      console.log("Search results", data.search.objects);
+      // map over each object, get the text and
+      // use JSON to parse it, then store the parsed
+      // object in parsedFeedback
+      const parsed = data.search.objects.map((obj: any) =>
+        JSON.parse(obj.text),
+      );
+      setParsedFeedback(parsed);
       console.log("Search error", error);
+      setStartSearch(false);
       if (data.search.status !== "success") {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: `${data.search.error}`,
-        });
+        if (data.search.error === "Text is empty.") {
+          return;
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: `${data.search.error}`,
+          });
+        }
       }
     },
   });
 
   const handleFeedbackSearch = async () => {
+    setStartSearch(true);
     // if (searchTerm.trim().length === 0) {
     //   toast({
     //     variant: "destructive",
@@ -95,8 +111,6 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     // }
     await search();
   };
-
-  console.log("Search results other", data);
 
   return (
     <div className="mx-auto max-w-5xl px-5 py-3">
@@ -179,9 +193,19 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
           </div>
         </form>
 
-        {results.map((feedback) => (
-          <Feedback key={feedback._id} feedback={feedback} />
-        ))}
+        {parsedFeedback.length > 0 && (
+          <div className="">
+            <h4 className="mb-6 text-xl font-medium">Search results</h4>
+            {parsedFeedback.map((feedback) => (
+              <Feedback key={feedback._id} feedback={feedback} />
+            ))}
+          </div>
+        )}
+
+        {parsedFeedback.length == 0 &&
+          results.map((feedback) => (
+            <Feedback key={feedback._id} feedback={feedback} />
+          ))}
         {status === "Exhausted" && results.length === 0 && (
           <div className="grid place-content-center">
             <p className="text-zinc-600">No feedback yet</p>
