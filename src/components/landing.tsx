@@ -4,17 +4,13 @@ import { useState } from "react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Authenticated, Unauthenticated } from "convex/react";
 
-import { MenuIcon } from "lucide-react";
+import { MenuIcon, Plane, Send } from "lucide-react";
 import { Button } from "./ui/button";
 
 import Link from "next/link";
+import Image from "next/image";
 
-// const navigation = [
-//   { name: "Product", href: "#" },
-//   { name: "Features", href: "#" },
-//   { name: "Marketplace", href: "#" },
-//   { name: "Company", href: "#" },
-// ];
+import shot from "../../public/feednest.png";
 
 export default function Landing() {
   const { signIn } = useAuthActions();
@@ -28,7 +24,8 @@ export default function Landing() {
           aria-label="Global"
           className="flex items-center justify-between p-6 lg:px-8"
         >
-          <div className="flex lg:flex-1">
+          <div className="flex items-center">
+            <Send className="mr-2 h-5 w-5" />
             <h2>Feednest</h2>
           </div>
           <div className="flex lg:hidden">
@@ -41,17 +38,7 @@ export default function Landing() {
               <MenuIcon aria-hidden="true" className="h-6 w-6" />
             </button>
           </div>
-          {/* <div className="hidden lg:flex lg:gap-x-12">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="text-sm leading-6 text-gray-900"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div> */}
+
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             <a
               href="https://github.com/lucky-chap/feednest"
@@ -119,9 +106,9 @@ export default function Landing() {
               </div>
               <div className="mt-16 flow-root sm:mt-24">
                 <div className="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
-                  <img
+                  <Image
                     alt="App screenshot"
-                    src="https://tailwindui.com/plus/img/component-images/project-app-screenshot.png"
+                    src={shot}
                     width={2432}
                     height={1442}
                     className="rounded-md shadow-2xl ring-1 ring-gray-900/10"
