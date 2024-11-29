@@ -78,6 +78,12 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
   `;
 
   const [search, { loading, error, data }] = useLazyQuery(SearchFeedbackQuery, {
+    context: {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_HYPERMODE_API_KEY}`,
+      },
+    },
     skipPollAttempt: () => !startSearch,
     variables: {
       text: searchTerm,
@@ -113,6 +119,12 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
   const [summariseFeedback, { loading: summaryLoading }] = useLazyQuery(
     SummariseFeedbackQuery,
     {
+      context: {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_HYPERMODE_API_KEY}`,
+        },
+      },
       skipPollAttempt: () => !startSearch,
       variables: {
         feedback: results.map((feedback) => feedback.content), // return only the content of the feedback,
