@@ -36,7 +36,9 @@ export default function CodeDialog({ projectId }: { projectId: string }) {
 
   const handleNPMCopy = () => {
     if (projectId) {
-      navigator.clipboard.writeText("npm install feednest");
+      navigator.clipboard.writeText(
+        "npm install feednest @apollo/client graphql",
+      );
       setNPMCopied(true);
       setTimeout(() => {
         setNPMCopied(false);
@@ -47,7 +49,7 @@ export default function CodeDialog({ projectId }: { projectId: string }) {
   const handleImportCopy = () => {
     if (projectId) {
       navigator.clipboard.writeText(
-        "import { FeedbackWidget } from 'feednest'",
+        "import { FeedbackWidget, client } from 'feednest' \nimport { ApolloProvider } from '@apollo/client'",
       );
       setImportCopied(true);
       setTimeout(() => {
@@ -59,7 +61,7 @@ export default function CodeDialog({ projectId }: { projectId: string }) {
   const handleUseCopy = () => {
     if (projectId) {
       navigator.clipboard.writeText(
-        `<FeedbackWidget projectId='${projectId}' />`,
+        `<ApolloProvider client={client}> \n<FeedbackWidget projectId={${projectId}} /> \n// your other react components \n</ApolloProvider>`,
       );
       setUseCopied(true);
       setTimeout(() => {
@@ -75,7 +77,7 @@ export default function CodeDialog({ projectId }: { projectId: string }) {
           <Code size={14} className="text-zinc-400" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="">Using Feednest on your website</DialogTitle>
           <DialogDescription className="pt-3">
@@ -95,7 +97,7 @@ export default function CodeDialog({ projectId }: { projectId: string }) {
                     <code className="flex items-center">
                       <ChevronRight className="mr-2 h-4 w-4" />
                       <p className="font-medium text-green-600">npm</p> install
-                      feednest
+                      feednest @apollo/client graphql
                     </code>
                   </pre>
                 </CardContent>
@@ -103,7 +105,7 @@ export default function CodeDialog({ projectId }: { projectId: string }) {
               <Button
                 variant={"secondary"}
                 size="sm"
-                className="mb-1 ml-1 px-3"
+                className="ml-1 px-3"
                 onClick={handleNPMCopy}
               >
                 <span className="sr-only">Copy</span>
@@ -119,20 +121,30 @@ export default function CodeDialog({ projectId }: { projectId: string }) {
                 )}
               </Button>
             </div>
-            <div className="flex items-end justify-between">
+            <div className="flex items-center justify-between">
               <Card className="mt-3 w-full border-none shadow-none">
                 <CardHeader className="p-0">
-                  <h2 className="text-sm font-medium">Import package</h2>
+                  <h2 className="text-sm font-medium">Import packages</h2>
                 </CardHeader>
-                <CardContent className="mt-3 flex w-full items-center rounded-md bg-zinc-100 p-0 font-medium">
+                <CardContent className="mt-3 flex w-full flex-col items-center rounded-md bg-zinc-100 p-0 font-medium">
                   <pre className="w-full rounded-md p-2 text-sm">
                     <code className="flex items-center">
                       <p className="text-purple-600">import</p>{" "}
                       <span className="px-1 text-amber-400">{`{ `}</span>
-                      <span className="text-red-600">{`FeedbackWidget`}</span>
+                      <span className="text-red-600">{`FeedbackWidget, client`}</span>
                       <span className="px-1 text-amber-400">{` }`}</span>
                       <p className="pr-2 text-purple-600">from</p>{" "}
                       <p className="text-green-600">"feednest"</p>{" "}
+                    </code>
+                  </pre>
+                  <pre className="w-full rounded-md p-2 text-sm">
+                    <code className="flex items-center">
+                      <p className="text-purple-600">import</p>{" "}
+                      <span className="px-1 text-amber-400">{`{ `}</span>
+                      <span className="text-red-600">{`ApolloProvider`}</span>
+                      <span className="px-1 text-amber-400">{` }`}</span>
+                      <p className="pr-2 text-purple-600">from</p>{" "}
+                      <p className="text-green-600">"@apollo/client"</p>{" "}
                     </code>
                   </pre>
                 </CardContent>
@@ -140,7 +152,7 @@ export default function CodeDialog({ projectId }: { projectId: string }) {
               <Button
                 variant={"secondary"}
                 size="sm"
-                className="mb-1 ml-1 px-3"
+                className="ml-1 mt-2 px-3"
                 onClick={handleImportCopy}
               >
                 <span className="sr-only">Copy</span>
@@ -193,13 +205,34 @@ export default function CodeDialog({ projectId }: { projectId: string }) {
                 )}
               </Button>
             </div>
-            <div className="flex items-end justify-between">
+            <div className="flex items-center justify-between">
               <Card className="mt-3 w-full rounded-md border-none shadow-none">
                 <CardHeader className="p-0">
                   <h2 className="text-sm font-medium">Use it like this</h2>
                 </CardHeader>
-                <CardContent className="mt-3 flex w-full items-center bg-zinc-100 p-0 font-medium">
+                <CardContent className="mt-3 flex w-full flex-col items-center rounded-md bg-zinc-100 p-0 font-medium">
                   <pre className="w-full rounded-md bg-zinc-100 p-2 text-sm text-zinc-300">
+                    <code className="flex items-center">
+                      <p className="text-purple-600">
+                        <ChevronLeft className="-mr-1 h-4 w-4" />
+                      </p>{" "}
+                      <span className="-pl-3 pr-2 text-amber-600">
+                        ApolloProvider
+                      </span>
+                      <p className="text-blue-500">client=</p>
+                      <span className="rounded bg-zinc-200 px-2 py-[2px] text-zinc-400 md:hidden">
+                        {`{client}`}
+                      </span>
+                      <span className="hidden rounded bg-zinc-200 px-2 py-[2px] text-zinc-400 md:block">
+                        {`{client}`}
+                      </span>
+                      <p className="flex items-center text-purple-600">
+                        {"/"}
+                        <ChevronRight className="-mr-1 h-4 w-4" />
+                      </p>{" "}
+                    </code>
+                  </pre>
+                  <pre className="w-full rounded-md bg-zinc-100 px-2 text-sm text-zinc-300">
                     <code className="flex items-center">
                       <p className="text-purple-600">
                         <ChevronLeft className="-mr-1 h-4 w-4" />
@@ -218,8 +251,23 @@ export default function CodeDialog({ projectId }: { projectId: string }) {
                         {"/"}
                         <ChevronRight className="-mr-1 h-4 w-4" />
                       </p>{" "}
-                      {/* <p className="ml-1 text-purple-300">/</p>{" "} */}
-                      {/* <ChevronRight className="-ml-1 h-4 w-4" /> */}
+                    </code>
+                    <span className="ml-3 text-zinc-500">
+                      // your other react components
+                    </span>
+                  </pre>
+                  <pre className="w-full rounded-md bg-zinc-100 p-2 text-sm text-zinc-300">
+                    <code className="flex items-center">
+                      <p className="text-purple-600">
+                        <ChevronLeft className="-mr-1 h-4 w-4" />
+                      </p>{" "}
+                      <span className="-pl-3 pr-2 text-amber-600">
+                        ApolloProvider
+                      </span>
+                      <p className="flex items-center text-purple-600">
+                        {"/"}
+                        <ChevronRight className="-mr-1 h-4 w-4" />
+                      </p>{" "}
                     </code>
                   </pre>
                 </CardContent>
@@ -227,7 +275,7 @@ export default function CodeDialog({ projectId }: { projectId: string }) {
               <Button
                 variant={"secondary"}
                 size="sm"
-                className="mb-1 ml-1 px-3"
+                className="mb-10 ml-1 px-3"
                 onClick={handleUseCopy}
               >
                 <span className="sr-only">Copy</span>
