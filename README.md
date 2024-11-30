@@ -6,7 +6,7 @@
 
 Feednest is a powerful, user-friendly platform designed to help creators manage, and analyze feedback efficiently. Whether you're looking to improve a product, service, or process, this tool enables you to collect feedback from multiple sources, and derive actionable insights.
 
-**Read more [here](https://devpost.com/software/feednest-ioy981)**
+**Read more [here]([https://devpost.com/software/feednest-ioy981](https://quavo.hashnode.dev/manage-and-analyze-feedback-efficiently-with-feednest))**
 
 ## Inspiration 🔮
 
