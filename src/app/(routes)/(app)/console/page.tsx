@@ -6,6 +6,7 @@ import { api } from "../../../../../convex/_generated/api";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function Page() {
   const user = useQuery(api.user.viewer);
@@ -44,6 +45,7 @@ export default function Page() {
 
   return (
     <div className="py-3 md:px-20">
+      <SidebarTrigger className="-ml-1 mb-10 md:hidden" />
       <div className="flex items-center">
         <h2 className="mr-2 text-lg font-medium">Your projects</h2>
         <span className="me-2 rounded-full bg-blue-200 px-2.5 py-0.5 text-xs font-medium text-gray-800">
@@ -52,7 +54,7 @@ export default function Page() {
       </div>
       <div className="py-10">
         {/* <ProjectCard /> */}
-        <div className="grid gap-2 md:grid-cols-3">
+        <div className="grid gap-2 lg:grid-cols-3">
           {results.map((project) => (
             <div key={project._id} className="">
               <ProjectCard project={project} />
